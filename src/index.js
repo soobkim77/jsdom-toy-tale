@@ -49,10 +49,10 @@ function getToys(){
       document.getElementById("toy-collection").append(newToy)
     })}
     )
-  }
+}
 
 function addToyToContainer (t, c){
-  // c.id = t.id
+  c.id = t.id
   c.querySelector("h2").textContent = t.name
   c.querySelector("img").src = t.image
   c.querySelector("p").textContent = t.likes
@@ -69,10 +69,30 @@ function createOneToy(){
   const btn = document.createElement("button")
   btn.className = "like-btn"
   btn.textContent = "Like <3"
+  btn.addEventListener('click', addLikes)
   div.append(name, img, p ,btn)
-  console.log(div)
   return div
 }
 
+function addLikes(e){
+  const parentDiv = e.target.parentElement
+  const id = parentDiv.id
+  let likeAmount = parentDiv.querySelector("p")
+  let likeValue = parseInt(likeAmount.textContent)
+  const likeURL = `http://localhost:3000/toys/${id}`
+  let newLikeCount = likeValue + 1
+  fetch(likeURL, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      "Accept": "application/json"
+    },
+    body: JSON.stringify({"likes": newLikeCount})
+  })
+  .then(r => r.json())
+  .then(like => {
+      likeAmount.textContent = like.likes
+  })
+ }
 
 getToys();
